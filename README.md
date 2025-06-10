@@ -6,6 +6,8 @@ Nama | NRP
 Evan Christian Nainggolan | 5027241026
 Oscaryavat Viryavan | 5027241053
 Angga Firmansyah | 5027241062
+Kaisar Hanif Pratama | 5027241029
+Salomo | 5027221063
 
 ## Daftar Isi
 - [Kelompok](#kelompok)
