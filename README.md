@@ -56,7 +56,6 @@ Angga Firmansyah | 5027241062
 * FULLTEXT INDEX pada kolom title, description.
 * Query:
 ```sql
-Salin kode
 SELECT * FROM Book
 WHERE MATCH(title, description) AGAINST("kata kunci");
 ```
@@ -75,9 +74,22 @@ db.books.find({ $text: { $search: "kata kunci" } });
 ### 4. Sirkulasi (Peminjaman & Pengembalian)
 #### MySQL
 * Tabel Loan (loan_id, member_id, book_id, loan_date, due_date, return_date, status).
-* Gunakan TRANSACTION:
+* Gunakan PROCEDURE:
 ```sql
-otw
+-- 1) Kurangi stok (akan error kalau stok 0)
+UPDATE Book
+    SET available_copies = available_copies - 1
+    WHERE book_id = p_book
+      AND available_copies > 0;
+  IF ROW_COUNT() = 0 THEN
+    SIGNAL insufficient_stock
+      SET MESSAGE_TEXT = 'Stok tidak mencukupi';
+  END IF;
+
+-- 2) Catat peminjaman
+  INSERT INTO Loan(member_id, book_id, loan_date, due_date, status)
+  VALUES(p_member, p_book, NOW(), p_due, 'Borrowed');
+END;
 ```
 #### MongoDB
 * Koleksi loans, dokumen:
