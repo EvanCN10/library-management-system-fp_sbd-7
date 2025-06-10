@@ -1,5 +1,16 @@
 # library-management-system-fp_sbd-7
 
+## Kelompok
+Nama | NRP
+--- | ---
+Evan Christian Nainggolan | 5027241026
+Oscaryavat Viryavan | 5027241053
+Angga Firmansyah | 5027241062
+
+## Daftar Isi
+- [Kelompok](#kelompok)
+- [Fitur-fitur](#fitur-fitur)
+
 ## Fitur-fitur
 ### 1. Manajemen Koleksi Buku
 #### MySQL
