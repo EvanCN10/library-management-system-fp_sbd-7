@@ -1,442 +1,368 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Enhanced Navigation: section switching with smooth transitions
-  const navItems = document.querySelectorAll(".nav-item");
-  const sections = document.querySelectorAll(".section");
-  const hamburger = document.getElementById("hamburger");
-  const navMenu = document.getElementById("navMenu");
+  // Get DOM elements
+  const navItems = document.querySelectorAll(".nav-item")
+  const sections = document.querySelectorAll(".section")
+  const hamburger = document.getElementById("hamburger")
+  const navMenu = document.getElementById("navMenu")
 
-  // Navigation functionality
+  // Performance optimization - Store DOM queries
+  const body = document.body
+  const html = document.documentElement
+
+  // Intersection Observer for lazy loading
+  const lazyLoadObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          if (entry.target.dataset.src) {
+            entry.target.src = entry.target.dataset.src
+            entry.target.removeAttribute("data-src")
+          }
+          lazyLoadObserver.unobserve(entry.target)
+        }
+      })
+    },
+    { rootMargin: "100px" },
+  )
+
+  // Apply lazy loading to images
+  document.querySelectorAll("img[data-src]").forEach((img) => {
+    lazyLoadObserver.observe(img)
+  })
+
+  // Navigation functionality with improved performance
   navItems.forEach((item) => {
     item.addEventListener("click", (e) => {
-      e.preventDefault();
-      const target = item.getAttribute("data-section");
-      
-      // Set active nav with smooth transition
-      navItems.forEach((i) => i.classList.remove("active"));
-      item.classList.add("active");
-      
-      // Show section with fade effect
+      e.preventDefault()
+      const target = item.getAttribute("data-section")
+
+      // Set active nav - use classList toggle with second parameter for better performance
+      navItems.forEach((i) => i.classList.toggle("active", i === item))
+
+      // Show section - use classList toggle with second parameter for better performance
       sections.forEach((sec) => {
-        if (sec.id === target) {
-          sec.classList.add("active");
-          // Add entrance animation
-          sec.style.opacity = "0";
-          sec.style.transform = "translateY(20px)";
-          setTimeout(() => {
-            sec.style.opacity = "1";
-            sec.style.transform = "translateY(0)";
-          }, 50);
-        } else {
-          sec.classList.remove("active");
-        }
-      });
-      
+        sec.classList.toggle("active", sec.id === target)
+      })
+
       // Close mobile nav if open
-      closeMobileNav();
-    });
-  });
+      if (window.innerWidth <= 991) {
+        closeNavMenu()
+      }
+    })
+  })
 
-  // Enhanced Hamburger menu toggle with animation
-  function toggleMobileNav() {
-    hamburger.classList.toggle("active");
-    navMenu.classList.toggle("show");
-    
-    // Prevent body scroll when menu is open
+  // Hamburger menu toggle with improved animation
+  function toggleNavMenu() {
     if (navMenu.classList.contains("show")) {
-      document.body.style.overflow = "hidden";
+      closeNavMenu()
     } else {
-      document.body.style.overflow = "";
+      openNavMenu()
     }
   }
 
-  function closeMobileNav() {
-    hamburger.classList.remove("active");
-    navMenu.classList.remove("show");
-    document.body.style.overflow = "";
+  function openNavMenu() {
+    hamburger.classList.add("active")
+    navMenu.classList.add("show")
+    body.style.overflow = "hidden" // Prevent scrolling
+
+    // Add animation classes
+    navMenu.querySelectorAll(".nav-item").forEach((item, index) => {
+      item.style.animationDelay = `${index * 0.05}s`
+      item.classList.add("fade-in-up")
+    })
   }
 
-  hamburger?.addEventListener("click", toggleMobileNav);
+  function closeNavMenu() {
+    hamburger.classList.remove("active")
+    navMenu.classList.remove("show")
+    body.style.overflow = "" // Allow scrolling
 
-  // Close mobile nav when clicking outside
+    // Remove animation classes
+    navMenu.querySelectorAll(".nav-item").forEach((item) => {
+      item.style.animationDelay = ""
+      item.classList.remove("fade-in-up")
+    })
+  }
+
+  // Add event listener to hamburger button
+  if (hamburger) {
+    hamburger.addEventListener("click", (e) => {
+      e.stopPropagation() // Prevent event bubbling
+      toggleNavMenu()
+    })
+  }
+
+  // Close menu when clicking outside - use event delegation for better performance
   document.addEventListener("click", (e) => {
-    if (!hamburger?.contains(e.target) && !navMenu?.contains(e.target)) {
-      closeMobileNav();
+    if (navMenu && navMenu.classList.contains("show")) {
+      if (!navMenu.contains(e.target) && !hamburger.contains(e.target)) {
+        closeNavMenu()
+      }
     }
-  });
+  })
 
-  // Close mobile nav on window resize if screen becomes large
+  // Handle window resize with debounce for better performance
+  let resizeTimer
   window.addEventListener("resize", () => {
-    if (window.innerWidth > 768) {
-      closeMobileNav();
-    }
-    handleResponsiveElements();
-  });
+    clearTimeout(resizeTimer)
+    resizeTimer = setTimeout(() => {
+      const windowWidth = window.innerWidth
 
-  // Enhanced Tab switching with smooth transitions
-  const tabButtons = document.querySelectorAll(".tab-btn");
-  const tabPanels = document.querySelectorAll(".tab-panel");
-  
-  tabButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const tab = btn.getAttribute("data-tab");
-      
-      // Update buttons active state with animation
+      // Update hamburger visibility based on screen size
+      if (windowWidth > 991) {
+        // Desktop: Hide hamburger, close mobile menu
+        closeNavMenu()
+        hamburger.style.display = "none"
+      } else {
+        // Tablet/Mobile: Show hamburger
+        hamburger.style.display = "flex"
+      }
+
+      // Update responsive tables
+      setupResponsiveTables()
+    }, 100)
+  })
+
+  // Enhanced Tab switching with event delegation
+  const tabsContainer = document.querySelector(".tabs")
+  if (tabsContainer) {
+    tabsContainer.addEventListener("click", (e) => {
+      const btn = e.target.closest(".tab-btn")
+      if (!btn) return
+
+      const tab = btn.getAttribute("data-tab")
+      const tabButtons = tabsContainer.querySelectorAll(".tab-btn")
+      const tabPanels = document.querySelectorAll(".tab-panel")
+
+      // Update buttons active state
       tabButtons.forEach((b) => {
-        b.classList.toggle("active", b === btn);
-        if (b === btn) {
-          b.style.transform = "scale(1.05)";
-          setTimeout(() => {
-            b.style.transform = "scale(1)";
-          }, 150);
-        }
-      });
-      
-      // Update panels with fade effect
-      tabPanels.forEach((panel) => {
-        if (panel.id === tab) {
-          panel.classList.add("active");
-          panel.style.opacity = "0";
-          panel.style.transform = "translateY(10px)";
-          setTimeout(() => {
-            panel.style.opacity = "1";
-            panel.style.transform = "translateY(0)";
-          }, 50);
-        } else {
-          panel.classList.remove("active");
-        }
-      });
-    });
-  });
+        b.classList.toggle("active", b === btn)
+      })
 
-  // Enhanced Modal logic with better accessibility
+      // Update panels
+      tabPanels.forEach((panel) => {
+        panel.classList.toggle("active", panel.id === tab)
+      })
+    })
+  }
+
+  // Modal functionality with improved performance
   function setupModal(openBtnId, modalId, closeSelector) {
-    const openBtn = document.getElementById(openBtnId);
-    const modal = document.getElementById(modalId);
-    const closeBtn = modal?.querySelector(closeSelector);
+    const openBtn = document.getElementById(openBtnId)
+    const modal = document.getElementById(modalId)
+    if (!modal || !openBtn) return
+
+    const closeBtn = modal.querySelector(closeSelector)
 
     function openModal() {
-      if (modal) {
-        modal.classList.add("show");
-        document.body.style.overflow = "hidden";
-        
-        // Focus management for accessibility
-        const firstFocusable = modal.querySelector('input, button, select, textarea, [tabindex]:not([tabindex="-1"])');
-        firstFocusable?.focus();
-        
-        // Add entrance animation
-        const modalContent = modal.querySelector('.modal-content');
-        if (modalContent) {
-          modalContent.style.transform = "scale(0.9) translateY(-20px)";
-          modalContent.style.opacity = "0";
-          setTimeout(() => {
-            modalContent.style.transform = "scale(1) translateY(0)";
-            modalContent.style.opacity = "1";
-          }, 50);
-        }
+      modal.classList.add("show")
+      body.style.overflow = "hidden"
+
+      // Focus trap for accessibility
+      const focusableElements = modal.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      )
+      if (focusableElements.length) {
+        focusableElements[0].focus()
       }
     }
 
     function closeModal() {
-      if (modal) {
-        const modalContent = modal.querySelector('.modal-content');
-        if (modalContent) {
-          modalContent.style.transform = "scale(0.9) translateY(-20px)";
-          modalContent.style.opacity = "0";
-        }
-        
-        setTimeout(() => {
-          modal.classList.remove("show");
-          document.body.style.overflow = "";
-        }, 200);
-      }
+      modal.classList.remove("show")
+      body.style.overflow = ""
     }
 
-    openBtn?.addEventListener("click", openModal);
-    closeBtn?.addEventListener("click", closeModal);
-    
-    // Enhanced outside click handling
-    modal?.addEventListener("click", (e) => {
-      if (e.target === modal) {
-        closeModal();
-      }
-    });
+    openBtn.addEventListener("click", openModal)
+    closeBtn?.addEventListener("click", closeModal)
 
-    // Keyboard navigation
-    modal?.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        closeModal();
+    // Close on outside click
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        closeModal()
       }
-    });
+    })
+
+    // Close on Escape key
+    modal.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        closeModal()
+      }
+    })
   }
 
-  setupModal("addBookBtn", "addBookModal", ".close");
-  setupModal("addMemberBtn", "addMemberModal", ".close");
-  setupModal("newLoanBtn", "newLoanModal", ".close");
+  // Setup modals
+  setupModal("addBookBtn", "addBookModal", ".close")
+  setupModal("addMemberBtn", "addMemberModal", ".close")
+  setupModal("newLoanBtn", "newLoanModal", ".close")
 
-  // Enhanced Notification system
-  const notification = document.getElementById("notification");
-  const closeNotif = document.getElementById("closeNotification");
-  
+  // Notification system with improved animation
+  const notification = document.getElementById("notification")
+  const closeNotif = document.getElementById("closeNotification")
+
   closeNotif?.addEventListener("click", () => {
-    hideNotification();
-  });
+    hideNotification()
+  })
 
   function hideNotification() {
     if (notification) {
-      notification.style.transform = "translateX(400px)";
-      setTimeout(() => {
-        notification.classList.remove("show");
-      }, 300);
+      notification.classList.remove("show")
     }
   }
 
-  // Enhanced notification function (REMOVED AUTO-SHOW)
   window.showNotification = (message, type = "success") => {
-    const notif = document.getElementById("notification");
-    const msg = document.getElementById("notificationMessage");
-    
+    const notif = document.getElementById("notification")
+    const msg = document.getElementById("notificationMessage")
+
     if (notif && msg) {
-      notif.className = `notification show ${type}`;
-      msg.textContent = message;
-      
-      // Entrance animation
-      notif.style.transform = "translateX(400px)";
-      setTimeout(() => {
-        notif.style.transform = "translateX(0)";
-      }, 50);
-      
-      // Auto-hide with animation
-      setTimeout(() => {
-        hideNotification();
-      }, 4000);
-    }
-  };
+      // Reset any existing animations
+      notif.style.animation = "none"
+      notif.offsetHeight // Trigger reflow
+      notif.style.animation = ""
 
-  // Enhanced search functionality with debouncing
-  function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-      const later = () => {
-        clearTimeout(timeout);
-        func(...args);
-      };
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-    };
+      notif.className = `notification show ${type}`
+      msg.textContent = message
+
+      // Auto-hide after 4 seconds
+      setTimeout(() => {
+        hideNotification()
+      }, 4000)
+    }
   }
 
+  // Search functionality with debounce for better performance
   function setupSearch(inputId, tableBodyId) {
-    const input = document.getElementById(inputId);
-    const tbody = document.getElementById(tableBodyId);
-    
-    if (input && tbody) {
-      const searchFunction = debounce(() => {
-        const filter = input.value.toLowerCase().trim();
-        const rows = Array.from(tbody.rows);
-        let visibleCount = 0;
-        
-        rows.forEach((row, index) => {
-          const text = row.textContent.toLowerCase();
-          const shouldShow = text.includes(filter);
-          
-          if (shouldShow) {
-            row.style.display = "";
-            row.style.animationDelay = `${index * 50}ms`;
-            row.classList.add("fade-in");
-            visibleCount++;
-          } else {
-            row.style.display = "none";
-            row.classList.remove("fade-in");
-          }
-        });
-        
-        // Show "no results" message if needed
-        updateNoResultsMessage(tbody, visibleCount, filter);
-      }, 300);
-      
-      input.addEventListener("input", searchFunction);
-    }
+    const input = document.getElementById(inputId)
+    const tbody = document.getElementById(tableBodyId)
+    if (!input || !tbody) return
+
+    let searchTimeout
+    input.addEventListener("input", () => {
+      clearTimeout(searchTimeout)
+      searchTimeout = setTimeout(() => {
+        const filter = input.value.toLowerCase().trim()
+        const rows = Array.from(tbody.rows)
+
+        rows.forEach((row) => {
+          const text = row.textContent.toLowerCase()
+          row.style.display = text.includes(filter) ? "" : "none"
+        })
+      }, 200)
+    })
   }
 
-  function updateNoResultsMessage(tbody, visibleCount, filter) {
-    const existingMsg = tbody.parentElement?.querySelector('.no-results-message');
-    
-    if (visibleCount === 0 && filter) {
-      if (!existingMsg) {
-        const noResultsRow = document.createElement('div');
-        noResultsRow.className = 'no-results-message';
-        noResultsRow.innerHTML = `
-          <div style="text-align: center; padding: 2rem; color: #666; font-style: italic;">
-            <i class="fas fa-search" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i>
-            <p>Tidak ada hasil yang ditemukan untuk "${filter}"</p>
-          </div>
-        `;
-        tbody.parentElement?.appendChild(noResultsRow);
-      }
-    } else if (existingMsg) {
-      existingMsg.remove();
-    }
-  }
+  setupSearch("bookSearch", "booksTableBody")
+  setupSearch("memberSearch", "membersTableBody")
 
-  setupSearch("bookSearch", "booksTableBody");
-  setupSearch("memberSearch", "membersTableBody");
+  // Filter functionality with improved performance
+  const categoryFilter = document.getElementById("categoryFilter")
+  const yearFilter = document.getElementById("yearFilter")
 
-  // Enhanced filtering with loading states
-  const categoryFilter = document.getElementById("categoryFilter");
-  const yearFilter = document.getElementById("yearFilter");
-  
-  function showLoadingState(tbody) {
-    tbody.style.opacity = "0.5";
-    tbody.style.pointerEvents = "none";
-  }
-  
-  function hideLoadingState(tbody) {
-    tbody.style.opacity = "1";
-    tbody.style.pointerEvents = "auto";
-  }
-  
   function filterBooks() {
-    const tbody = document.getElementById("booksTableBody");
-    if (!tbody) return;
-    
-    showLoadingState(tbody);
-    
-    setTimeout(() => {
-      const cat = categoryFilter?.value || "";
-      const year = yearFilter?.value || "";
-      const rows = Array.from(tbody.rows);
-      let visibleCount = 0;
-      
-      rows.forEach((row, index) => {
-        const rowCat = row.cells[3]?.textContent || "";
-        const rowYear = row.cells[4]?.textContent || "";
-        const showCat = !cat || rowCat === cat;
-        const showYear = !year || rowYear === year;
-        const shouldShow = showCat && showYear;
-        
-        if (shouldShow) {
-          row.style.display = "";
-          row.style.animationDelay = `${index * 30}ms`;
-          row.classList.add("fade-in");
-          visibleCount++;
-        } else {
-          row.style.display = "none";
-          row.classList.remove("fade-in");
-        }
-      });
-      
-      updateNoResultsMessage(tbody, visibleCount, cat || year ? "filter criteria" : "");
-      hideLoadingState(tbody);
-    }, 200);
-  }
-  
-  categoryFilter?.addEventListener("change", filterBooks);
-  yearFilter?.addEventListener("change", filterBooks);
+    const tbody = document.getElementById("booksTableBody")
+    if (!tbody) return
 
-  // Responsive elements handler
-  function handleResponsiveElements() {
-    const isMobile = window.innerWidth <= 768;
-    const isTablet = window.innerWidth <= 1024 && window.innerWidth > 768;
-    
-    // Adjust table display for mobile
-    const tables = document.querySelectorAll('.data-table');
-    tables.forEach(table => {
-      if (isMobile) {
-        table.classList.add('mobile-table');
-      } else {
-        table.classList.remove('mobile-table');
-      }
-    });
-    
-    // Adjust stats grid for different screen sizes
-    const statsGrid = document.querySelector('.stats-grid');
-    if (statsGrid) {
-      if (isMobile) {
-        statsGrid.style.gridTemplateColumns = '1fr';
-      } else if (isTablet) {
-        statsGrid.style.gridTemplateColumns = 'repeat(2, 1fr)';
-      } else {
-        statsGrid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(280px, 1fr))';
-      }
-    }
+    const cat = categoryFilter?.value || ""
+    const year = yearFilter?.value || ""
+
+    // Use requestAnimationFrame for smoother UI updates
+    requestAnimationFrame(() => {
+      const rows = Array.from(tbody.rows)
+      rows.forEach((row) => {
+        const rowCat = row.cells[3]?.textContent || ""
+        const rowYear = row.cells[4]?.textContent || ""
+        const showCat = !cat || rowCat === cat
+        const showYear = !year || rowYear === year
+        row.style.display = showCat && showYear ? "" : "none"
+      })
+    })
   }
 
-  // Enhanced stats animation
-  function animateStats() {
-    const statNumbers = document.querySelectorAll('.stat-info h3');
-    
-    statNumbers.forEach(stat => {
-      const finalValue = parseInt(stat.textContent) || 0;
-      let currentValue = 0;
-      const increment = finalValue / 50;
-      const timer = setInterval(() => {
-        currentValue += increment;
-        if (currentValue >= finalValue) {
-          stat.textContent = finalValue.toString();
-          clearInterval(timer);
-        } else {
-          stat.textContent = Math.floor(currentValue).toString();
-        }
-      }, 30);
-    });
-  }
+  categoryFilter?.addEventListener("change", filterBooks)
+  yearFilter?.addEventListener("change", filterBooks)
 
   // Initialize stats with animation
   function initializeStats() {
-    document.getElementById("totalBooks").textContent = "1250";
-    document.getElementById("totalMembers").textContent = "350";
-    document.getElementById("borrowedBooks").textContent = "97";
-    document.getElementById("overdueBooks").textContent = "12";
-    
-    // Trigger animation after a short delay
-    setTimeout(animateStats, 500);
+    const statElements = [
+      { id: "totalBooks", value: 1250 },
+      { id: "totalMembers", value: 350 },
+      { id: "borrowedBooks", value: 97 },
+      { id: "overdueBooks", value: 12 },
+    ]
+
+    statElements.forEach((stat) => {
+      const element = document.getElementById(stat.id)
+      if (!element) return
+
+      // Animate the counter
+      animateCounter(element, 0, stat.value, 1500)
+    })
   }
 
-  // Enhanced recent activities with better formatting
+  // Counter animation function
+  function animateCounter(element, start, end, duration) {
+    let startTimestamp = null
+    const step = (timestamp) => {
+      if (!startTimestamp) startTimestamp = timestamp
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1)
+      const value = Math.floor(progress * (end - start) + start)
+      element.textContent = value
+      if (progress < 1) {
+        window.requestAnimationFrame(step)
+      }
+    }
+    window.requestAnimationFrame(step)
+  }
+
+  // Initialize activities with staggered animation
   function initializeActivities() {
-    const recentAct = document.getElementById("recentActivities");
-    if (!recentAct) return;
-    
+    const recentAct = document.getElementById("recentActivities")
+    if (!recentAct) return
+
     const activities = [
       {
         icon: "fa-plus",
         text: 'Buku "Pemrograman Modern" ditambahkan',
         time: "10 menit lalu",
-        type: "success"
+        type: "success",
       },
       {
         icon: "fa-user-plus",
         text: 'Anggota "Budi Santoso" terdaftar',
         time: "1 jam lalu",
-        type: "info"
+        type: "info",
       },
       {
         icon: "fa-exchange-alt",
         text: 'Buku "Algoritma dan Struktur Data" dipinjam oleh Ani',
         time: "2 jam lalu",
-        type: "warning"
+        type: "warning",
       },
       {
         icon: "fa-undo",
         text: 'Buku "Database Management" dikembalikan',
         time: "3 jam lalu",
-        type: "success"
+        type: "success",
       },
       {
         icon: "fa-exclamation-triangle",
         text: 'Buku "Web Development" terlambat dikembalikan',
         time: "5 jam lalu",
-        type: "danger"
-      }
-    ];
-    
+        type: "danger",
+      },
+    ]
+
     // Clear existing activities
-    recentAct.innerHTML = "";
-    
+    recentAct.innerHTML = ""
+
+    // Create document fragment for better performance
+    const fragment = document.createDocumentFragment()
+
     activities.forEach((act, index) => {
-      const div = document.createElement("div");
-      div.className = "activity-item";
-      div.style.animationDelay = `${index * 100}ms`;
+      const div = document.createElement("div")
+      div.className = "activity-item"
+      div.style.animationDelay = `${index * 0.1}s`
+      div.classList.add("fade-in-up")
+
       div.innerHTML = `
         <div class="activity-icon ${act.type}">
           <i class="fas ${act.icon}"></i>
@@ -446,180 +372,269 @@ document.addEventListener("DOMContentLoaded", () => {
           <p>Sistem perpustakaan digital</p>
         </div>
         <div class="activity-time">${act.time}</div>
-      `;
-      recentAct.appendChild(div);
-      
-      // Add entrance animation
-      setTimeout(() => {
-        div.classList.add("fade-in-up");
-      }, index * 100);
-    });
+      `
+
+      fragment.appendChild(div)
+    })
+
+    recentAct.appendChild(fragment)
   }
 
-  // Form validation enhancement
+  // Form validation with improved feedback
   function enhanceFormValidation() {
-    const forms = document.querySelectorAll('form');
-    
-    forms.forEach(form => {
-      const inputs = form.querySelectorAll('input, select, textarea');
-      
-      inputs.forEach(input => {
-        // Real-time validation
-        input.addEventListener('blur', () => {
-          validateField(input);
-        });
-        
-        input.addEventListener('input', () => {
-          if (input.classList.contains('error')) {
-            validateField(input);
+    const forms = document.querySelectorAll("form")
+
+    forms.forEach((form) => {
+      // Live validation
+      form.querySelectorAll("input, select, textarea").forEach((field) => {
+        field.addEventListener("blur", () => {
+          validateField(field)
+        })
+
+        field.addEventListener("input", () => {
+          if (field.classList.contains("error")) {
+            validateField(field)
           }
-        });
-      });
-      
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        let isValid = true;
-        
-        inputs.forEach(input => {
-          if (!validateField(input)) {
-            isValid = false;
+        })
+      })
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault()
+
+        // Validate all fields
+        let isValid = true
+        form.querySelectorAll("input, select, textarea").forEach((field) => {
+          if (!validateField(field)) {
+            isValid = false
           }
-        });
-        
+        })
+
         if (isValid) {
-          // Show success message
-          showNotification('Data berhasil disimpan!', 'success');
-          form.reset();
+          window.showNotification("Data berhasil disimpan!", "success")
+          form.reset()
+
           // Close modal if form is in modal
-          const modal = form.closest('.modal');
+          const modal = form.closest(".modal")
           if (modal) {
-            modal.classList.remove('show');
-            document.body.style.overflow = "";
+            modal.classList.remove("show")
+            body.style.overflow = ""
           }
         } else {
-          showNotification('Mohon periksa kembali data yang dimasukkan', 'error');
+          window.showNotification("Mohon lengkapi semua field yang wajib diisi", "error")
+
+          // Focus first error field
+          const firstError = form.querySelector(".error")
+          if (firstError) {
+            firstError.focus()
+          }
         }
-      });
-    });
+      })
+    })
+
+    function validateField(field) {
+      // Remove existing error message
+      const existingError = field.parentElement.querySelector(".error-message")
+      if (existingError) existingError.remove()
+
+      let isValid = true
+
+      // Required validation
+      if (field.hasAttribute("required") && !field.value.trim()) {
+        isValid = false
+        field.classList.add("error")
+
+        // Add error message
+        const errorMsg = document.createElement("div")
+        errorMsg.className = "error-message"
+        errorMsg.textContent = "Field ini wajib diisi"
+        field.parentElement.appendChild(errorMsg)
+      } else {
+        field.classList.remove("error")
+      }
+
+      // Email validation
+      if (field.type === "email" && field.value.trim()) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(field.value.trim())) {
+          isValid = false
+          field.classList.add("error")
+
+          // Add error message
+          const errorMsg = document.createElement("div")
+          errorMsg.className = "error-message"
+          errorMsg.textContent = "Format email tidak valid"
+          field.parentElement.appendChild(errorMsg)
+        }
+      }
+
+      return isValid
+    }
   }
 
-  function validateField(field) {
-    const value = field.value.trim();
-    let isValid = true;
-    let errorMessage = '';
-    
-    // Remove existing error styling
-    field.classList.remove('error');
-    const existingError = field.parentElement?.querySelector('.error-message');
-    if (existingError) {
-      existingError.remove();
+  // Initialize responsive state with improved detection
+  function initializeResponsiveState() {
+    const windowWidth = window.innerWidth
+
+    // Only show hamburger on tablet and mobile (≤ 991px)
+    if (windowWidth <= 991) {
+      // Tablet/Mobile: Show hamburger
+      if (hamburger) hamburger.style.display = "flex"
+    } else {
+      // Desktop: Hide hamburger
+      if (hamburger) hamburger.style.display = "none"
     }
-    
-    // Required field validation
-    if (field.hasAttribute('required') && !value) {
-      isValid = false;
-      errorMessage = 'Field ini wajib diisi';
-    }
-    
-    // Email validation
-    if (field.type === 'email' && value) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(value)) {
-        isValid = false;
-        errorMessage = 'Format email tidak valid';
+  }
+
+  // Handle responsive tables
+  function setupResponsiveTables() {
+    const tables = document.querySelectorAll(".data-table")
+    const windowWidth = window.innerWidth
+
+    tables.forEach((table) => {
+      if (windowWidth <= 768) {
+        table.classList.add("mobile-table")
+      } else {
+        table.classList.remove("mobile-table")
       }
-    }
-    
-    // Phone validation
-    if (field.type === 'tel' && value) {
-      const phoneRegex = /^[\d\s\-\+$$$$]+$/;
-      if (!phoneRegex.test(value)) {
-        isValid = false;
-        errorMessage = 'Format nomor telepon tidak valid';
-      }
-    }
-    
-    if (!isValid) {
-      field.classList.add('error');
-      const errorDiv = document.createElement('div');
-      errorDiv.className = 'error-message';
-      errorDiv.textContent = errorMessage;
-      field.parentElement?.appendChild(errorDiv);
-    }
-    
-    return isValid;
+    })
   }
 
   // Keyboard shortcuts
-  function initializeKeyboardShortcuts() {
-    document.addEventListener('keydown', (e) => {
-      // Ctrl/Cmd + K for search
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault();
-        const searchInput = document.querySelector('input[type="search"], input[placeholder*="Cari"]');
-        if (searchInput) {
-          searchInput.focus();
-          searchInput.select();
-        }
-      }
-      
-      // Escape to close modals
-      if (e.key === 'Escape') {
-        const openModal = document.querySelector('.modal.show');
+  function setupKeyboardShortcuts() {
+    document.addEventListener("keydown", (e) => {
+      // Escape key closes modals and mobile menu
+      if (e.key === "Escape") {
+        // Close any open modal
+        const openModal = document.querySelector(".modal.show")
         if (openModal) {
-          openModal.classList.remove('show');
-          document.body.style.overflow = "";
+          openModal.classList.remove("show")
+          body.style.overflow = ""
         }
-        closeMobileNav();
+
+        // Close mobile menu if open
+        if (navMenu && navMenu.classList.contains("show")) {
+          closeNavMenu()
+        }
       }
-    });
+
+      // Ctrl/Cmd + K focuses search
+      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+        e.preventDefault()
+        const searchInput = document.querySelector(".search-box input")
+        if (searchInput) {
+          searchInput.focus()
+        }
+      }
+    })
   }
 
-  // Performance optimization: Intersection Observer for animations
-  function initializeIntersectionObserver() {
-    const observerOptions = {
-      threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px'
-    };
-    
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('animate-in');
+  // Remove white box popup
+  function removeWhiteBox() {
+    // Find and remove any white box elements
+    const whiteBoxes = document.querySelectorAll(".popup-box, .white-box")
+    whiteBoxes.forEach((box) => {
+      box.style.display = "none"
+    })
+
+    // Add close buttons to any popup elements
+    document.querySelectorAll(".popup, .modal-like").forEach((popup) => {
+      const closeBtn = document.createElement("button")
+      closeBtn.className = "close-button"
+      closeBtn.innerHTML = "&times;"
+      closeBtn.addEventListener("click", () => {
+        popup.style.display = "none"
+      })
+      popup.appendChild(closeBtn)
+    })
+  }
+
+  // Add touch gestures for mobile
+  function setupTouchGestures() {
+    let touchStartX = 0
+    let touchEndX = 0
+
+    // Detect swipe right to open menu
+    document.addEventListener(
+      "touchstart",
+      (e) => {
+        touchStartX = e.changedTouches[0].screenX
+      },
+      { passive: true },
+    )
+
+    document.addEventListener(
+      "touchend",
+      (e) => {
+        touchEndX = e.changedTouches[0].screenX
+        handleSwipe()
+      },
+      { passive: true },
+    )
+
+    function handleSwipe() {
+      const swipeThreshold = 100
+
+      // Right swipe (from left edge) to open menu
+      if (touchEndX - touchStartX > swipeThreshold && touchStartX < 50) {
+        if (navMenu && !navMenu.classList.contains("show")) {
+          openNavMenu()
         }
-      });
-    }, observerOptions);
-    
-    // Observe elements that should animate on scroll
-    const animateElements = document.querySelectorAll('.stat-card, .card, .activity-item');
-    animateElements.forEach(el => observer.observe(el));
+      }
+
+      // Left swipe to close menu
+      if (touchStartX - touchEndX > swipeThreshold) {
+        if (navMenu && navMenu.classList.contains("show")) {
+          closeNavMenu()
+        }
+      }
+    }
+  }
+
+  // Improve font contrast
+  function improveFontContrast() {
+    // Add text-white class to important headings
+    document.querySelectorAll("h1, h2, h3, .stat-info p").forEach((el) => {
+      if (!el.classList.contains("text-gradient")) {
+        el.classList.add("text-white")
+      }
+    })
+
+    // Add text-light class to paragraph text
+    document.querySelectorAll("p, td, label").forEach((el) => {
+      el.classList.add("text-light")
+    })
   }
 
   // Initialize all functionality
   function initialize() {
-    initializeStats();
-    initializeActivities();
-    enhanceFormValidation();
-    initializeKeyboardShortcuts();
-    handleResponsiveElements();
-    
-    // Initialize intersection observer if supported
-    if ('IntersectionObserver' in window) {
-      initializeIntersectionObserver();
-    }
-    
-    // REMOVED: Auto-show welcome notification
-    // No more automatic welcome message
+    initializeStats()
+    initializeActivities()
+    enhanceFormValidation()
+    initializeResponsiveState()
+    setupResponsiveTables()
+    setupKeyboardShortcuts()
+    removeWhiteBox()
+    setupTouchGestures()
+    improveFontContrast()
   }
 
   // Run initialization
-  initialize();
+  initialize()
 
-  // Handle page visibility changes
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') {
-      // Refresh data when page becomes visible again
-      console.log('Page is now visible - refreshing data...');
-    }
-  });
-});
+  // Handle orientation change for mobile devices
+  window.addEventListener("orientationchange", () => {
+    setTimeout(() => {
+      initializeResponsiveState()
+      setupResponsiveTables()
+    }, 100)
+  })
+
+  // Add page load performance metrics
+  window.addEventListener("load", () => {
+    setTimeout(() => {
+      const perfData = window.performance.timing
+      const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart
+      console.log(`Page load time: ${pageLoadTime}ms`)
+    }, 0)
+  })
+})
