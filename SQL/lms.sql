@@ -11,7 +11,7 @@ CREATE TABLE books (
         description TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-      )
+      );
 
 CREATE TABLE members (
         id VARCHAR(36) PRIMARY KEY,
@@ -23,7 +23,7 @@ CREATE TABLE members (
         status ENUM('active', 'inactive') DEFAULT 'active',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-      )
+      );
 
 CREATE TABLE loans (
         id VARCHAR(36) PRIMARY KEY,
@@ -38,7 +38,7 @@ CREATE TABLE loans (
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE,
         FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE
-      )
+      );
 
 CREATE TABLE reservations (
         id VARCHAR(36) PRIMARY KEY,
@@ -50,4 +50,4 @@ CREATE TABLE reservations (
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE,
         FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE
-      )
+      );
