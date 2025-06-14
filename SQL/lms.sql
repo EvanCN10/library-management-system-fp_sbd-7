@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS books (
+CREATE TABLE books (
         id VARCHAR(36) PRIMARY KEY,
         title VARCHAR(255) NOT NULL,
         author VARCHAR(255) NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS books (
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       )
 
-CREATE TABLE IF NOT EXISTS members (
+CREATE TABLE members (
         id VARCHAR(36) PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
         email VARCHAR(255) NOT NULL UNIQUE,
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS members (
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       )
 
-CREATE TABLE IF NOT EXISTS loans (
+CREATE TABLE loans (
         id VARCHAR(36) PRIMARY KEY,
         member_id VARCHAR(36) NOT NULL,
         book_id VARCHAR(36) NOT NULL,
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS loans (
         FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE
       )
 
-CREATE TABLE IF NOT EXISTS reservations (
+CREATE TABLE reservations (
         id VARCHAR(36) PRIMARY KEY,
         member_id VARCHAR(36) NOT NULL,
         book_id VARCHAR(36) NOT NULL,
