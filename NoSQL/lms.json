@@ -1,1 +1,184 @@
-KERJAIN Yhhh tenkyuuu :3
+db.createCollection("publishers", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["name"],
+      properties: {
+        name: { bsonType: "string" },
+        address: { bsonType: "string" },
+        phone: { bsonType: "string" },
+        email: { bsonType: "string" }
+      }
+    }
+  }
+});
+db.publishers.createIndex({ name: 1 }, { unique: true });
+
+// 2. Author Collection
+db.createCollection("authors", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["name"],
+      properties: {
+        name: { bsonType: "string" },
+        bio: { bsonType: "string" }
+      }
+    }
+  }
+});
+
+// 3. Category Collection
+db.createCollection("categories", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["name"],
+      properties: {
+        name: { bsonType: "string" },
+        description: { bsonType: "string" }
+      }
+    }
+  }
+});
+db.categories.createIndex({ name: 1 }, { unique: true });
+
+// 4. Book Collection
+db.createCollection("books", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["title", "total_copies", "available_copies"],
+      properties: {
+        title: { bsonType: "string" },
+        isbn: { bsonType: "string" },
+        publisher: {
+          bsonType: "object",
+          properties: {
+            _id: {},
+            name: { bsonType: "string" }
+          }
+        },
+        publication_year: { bsonType: "int" },
+        total_copies: { bsonType: "int" },
+        available_copies: { bsonType: "int" },
+        description: { bsonType: "string" },
+        authors: {
+          bsonType: "array",
+          items: {
+            bsonType: "object",
+            properties: {
+              _id: {},
+              name: { bsonType: "string" }
+            }
+          }
+        },
+        categories: {
+          bsonType: "array",
+          items: {
+            bsonType: "object",
+            properties: {
+              _id: {},
+              name: { bsonType: "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+});
+db.books.createIndex({ isbn: 1 }, { unique: true });
+
+// 5. Member Collection
+db.createCollection("members", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["name", "join_date", "status"],
+      properties: {
+        name: { bsonType: "string" },
+        address: { bsonType: "string" },
+        phone: { bsonType: "string" },
+        email: { bsonType: "string" },
+        join_date: { bsonType: "date" },
+        status: { enum: ["Active", "Inactive"] }
+      }
+    }
+  }
+});
+db.members.createIndex({ email: 1 }, { unique: true });
+
+// 6. Loan Collection
+db.createCollection("loans", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["member", "book", "loan_date", "due_date", "status"],
+      properties: {
+        member: {
+          bsonType: "object",
+          properties: {
+            _id: {},
+            name: { bsonType: "string" }
+          }
+        },
+        book: {
+          bsonType: "object",
+          properties: {
+            _id: {},
+            title: { bsonType: "string" }
+          }
+        },
+        loan_date: { bsonType: "date" },
+        due_date: { bsonType: "date" },
+        return_date: { bsonType: ["date", "null"] },
+        status: { enum: ["Borrowed", "Returned", "Overdue"] }
+      }
+    }
+  }
+});
+
+// 7. Reservation Collection
+db.createCollection("reservations", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["member", "book", "reservation_date", "status"],
+      properties: {
+        member: {
+          bsonType: "object",
+          properties: {
+            _id: {},
+            name: { bsonType: "string" }
+          }
+        },
+        book: {
+          bsonType: "object",
+          properties: {
+            _id: {},
+            title: { bsonType: "string" }
+          }
+        },
+        reservation_date: { bsonType: "date" },
+        status: { enum: ["Pending", "Fulfilled", "Cancelled"] }
+      }
+    }
+  }
+});
+
+// 8. Librarian Collection
+db.createCollection("librarians", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["username", "password_hash", "role", "created_at"],
+      properties: {
+        username: { bsonType: "string" },
+        password_hash: { bsonType: "string" },
+        name: { bsonType: "string" },
+        role: { enum: ["Admin", "Staff"] },
+        created_at: { bsonType: "date" }
+      }
+    }
+  }
+});
