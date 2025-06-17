@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - LMS7</title>
+    <!-- Gunakan styles.css yang sudah digabung -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <!-- Logo -->
+            <div class="login-header">
+                <div class="logo">
+                    <i class="fas fa-book"></i>
+                </div>
+                <h1>LMS7</h1>
+                <p>Library Management System</p>
+            </div>
+
+            <!-- Login Form -->
+            <div class="login-content">
+                <h2>Masuk ke Sistem</h2>
+                <p class="subtitle">Silakan masukkan nama dan pilih peran Anda</p>
+                
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="userName">Nama Lengkap</label>
+                        <input type="text" id="userName" placeholder="Masukkan nama lengkap Anda" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="userRole">Peran</label>
+                        <select id="userRole" required>
+                            <option value="user">👤 User - Pengguna Biasa</option>
+                            <option value="librarian">👥 Librarian - Pustakawan</option>
+                        </select>
+                    </div>
+
+                    <!-- Role Description -->
+                    <div class="role-description" id="roleDescription">
+                        <div class="role-info">
+                            <div class="role-icon">👤</div>
+                            <div class="role-text">
+                                <h4>Pengguna Biasa</h4>
+                                <p>Dapat melihat koleksi buku, anggota, dan laporan. Tidak dapat menambah data baru.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="loginBtn">
+                        <span class="btn-text">Masuk ke Sistem</span>
+                        <div class="loading" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            Memproses...
+                        </div>
+                    </button>
+                </form>
+            </div>
+
+            <div class="footer">
+                <p>© 2024 LMS7 - Library Management System</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/login.js"></script>
+</body>
+</html>
