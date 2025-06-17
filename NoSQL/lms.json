@@ -37,29 +37,29 @@ db.categories.insertOne({
 
 // Books
 db.books.insertOne({
-  publisher_id: ObjectId(),        // reference to publishers
+  publisher_id: ObjectId(),      
   book_isbn: "",
   publication_year: null,
   total_copies: null,
   available_copies: null,
   book_description: "",
-  authors: [ObjectId()],           // references to authors
-  categories: [ObjectId()]         // references to categories
+  authors: [ObjectId()],          
+  categories: [ObjectId()]        
 });
 
 // Reservations
 db.reservations.insertOne({
   reservation_date: null,
   reservation_status: "",
-  member_id: ObjectId(),           // reference to members
-  book_id: ObjectId()              // reference to books
+  member_id: ObjectId(),           
+  book_id: ObjectId()              
 });
 
 // Loans
 db.loans.insertOne({
-  member_id: ObjectId(),           // reference to members
-  book_id: ObjectId(),             // reference to books
-  librarian_id: ObjectId(),        // reference to librarians
+  member_id: ObjectId(),          
+  book_id: ObjectId(),          
+  librarian_id: ObjectId(),       
   loan_date: null,
   due_date: null,
   return_date: null,
