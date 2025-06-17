@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LMS7</title>
-    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="css/styles.css" />
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
       rel="stylesheet"
@@ -161,7 +161,32 @@
                 </tr>
               </thead>
               <tbody id="booksTableBody">
-                <!-- Books data will be populated by JavaScript -->
+                <tr>
+                  <td>Pemrograman Modern</td>
+                  <td>John Doe</td>
+                  <td>978-123456789</td>
+                  <td>Teknologi</td>
+                  <td>2024</td>
+                  <td>5</td>
+                  <td>3</td>
+                  <td>
+                    <button class="btn btn-sm btn-secondary">Detail</button>
+                    <button class="btn btn-sm btn-primary">Edit</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Algoritma dan Struktur Data</td>
+                  <td>Jane Smith</td>
+                  <td>978-987654321</td>
+                  <td>Teknologi</td>
+                  <td>2023</td>
+                  <td>3</td>
+                  <td>1</td>
+                  <td>
+                    <button class="btn btn-sm btn-secondary">Detail</button>
+                    <button class="btn btn-sm btn-primary">Edit</button>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -204,7 +229,28 @@
                 </tr>
               </thead>
               <tbody id="membersTableBody">
-                <!-- Members data will be populated by JavaScript -->
+                <tr>
+                  <td>Budi Santoso</td>
+                  <td>budi@email.com</td>
+                  <td>081234567890</td>
+                  <td>2024-01-15</td>
+                  <td><span class="status-badge status-active">Aktif</span></td>
+                  <td>
+                    <button class="btn btn-sm btn-secondary">Detail</button>
+                    <button class="btn btn-sm btn-primary">Edit</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Siti Nurhaliza</td>
+                  <td>siti@email.com</td>
+                  <td>081234567891</td>
+                  <td>2024-02-20</td>
+                  <td><span class="status-badge status-active">Aktif</span></td>
+                  <td>
+                    <button class="btn btn-sm btn-secondary">Detail</button>
+                    <button class="btn btn-sm btn-primary">Edit</button>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -248,7 +294,16 @@
                     </tr>
                   </thead>
                   <tbody id="borrowedBooksBody">
-                    <!-- Data will be populated by JavaScript -->
+                    <tr>
+                      <td>Budi Santoso</td>
+                      <td>Pemrograman Modern</td>
+                      <td>2024-06-01</td>
+                      <td>2024-06-15</td>
+                      <td><span class="status-badge status-borrowed">Dipinjam</span></td>
+                      <td>
+                        <button class="btn btn-sm btn-success">Kembalikan</button>
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -266,7 +321,13 @@
                     </tr>
                   </thead>
                   <tbody id="returnedBooksBody">
-                    <!-- Data will be populated by JavaScript -->
+                    <tr>
+                      <td>Siti Nurhaliza</td>
+                      <td>Database Management</td>
+                      <td>2024-05-15</td>
+                      <td>2024-05-28</td>
+                      <td>Rp 0</td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -285,7 +346,16 @@
                     </tr>
                   </thead>
                   <tbody id="overdueBooksBody">
-                    <!-- Data will be populated by JavaScript -->
+                    <tr>
+                      <td>Ahmad Rahman</td>
+                      <td>Web Development</td>
+                      <td>2024-06-10</td>
+                      <td>7 hari</td>
+                      <td>Rp 7,000</td>
+                      <td>
+                        <button class="btn btn-sm btn-danger">Tagih</button>
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -317,7 +387,16 @@
                 </tr>
               </thead>
               <tbody id="reservationsTableBody">
-                <!-- Reservations data will be populated by JavaScript -->
+                <tr>
+                  <td>Dewi Sartika</td>
+                  <td>Algoritma dan Struktur Data</td>
+                  <td>2024-06-17</td>
+                  <td><span class="status-badge status-available">Menunggu</span></td>
+                  <td>
+                    <button class="btn btn-sm btn-success">Pinjamkan</button>
+                    <button class="btn btn-sm btn-danger">Batal</button>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -333,13 +412,13 @@
             <div class="card">
               <h3>Buku Populer</h3>
               <div id="popularBooksChart" class="chart-container">
-                <!-- Chart will be populated by JavaScript -->
+                Chart akan ditampilkan di sini
               </div>
             </div>
             <div class="card">
               <h3>Statistik Peminjaman</h3>
               <div id="loanStatsChart" class="chart-container">
-                <!-- Chart will be populated by JavaScript -->
+                Chart akan ditampilkan di sini
               </div>
             </div>
           </div>
@@ -455,14 +534,16 @@
             <label for="loanMember">Anggota *</label>
             <select id="loanMember" required>
               <option value="">Pilih Anggota</option>
-              <!-- Options will be populated by JavaScript -->
+              <option value="1">Budi Santoso</option>
+              <option value="2">Siti Nurhaliza</option>
             </select>
           </div>
           <div class="form-group">
             <label for="loanBook">Buku *</label>
             <select id="loanBook" required>
               <option value="">Pilih Buku</option>
-              <!-- Options will be populated by JavaScript -->
+              <option value="1">Pemrograman Modern</option>
+              <option value="2">Database Management</option>
             </select>
           </div>
           <div class="form-group">
@@ -487,6 +568,6 @@
       </div>
     </div>
 
-    <script src="/js/script.js"></script>
+    <script src="js/script.js"></script>
   </body>
 </html>
