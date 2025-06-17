@@ -9,7 +9,7 @@ db.createCollection("publishers", {
         phone: { bsonType: "string" },
         email: { bsonType: "string" }
       }
-    }
+    } 
   }
 });
 db.publishers.createIndex({ name: 1 }, { unique: true });
