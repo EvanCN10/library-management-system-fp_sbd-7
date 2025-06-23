@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Library Management System</h1>
+            <nav id="mainNav">
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#books">Books</a></li>
+                    <li><a href="#login">Login</a></li>
+                    <li><a href="#register">Register</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Home Section -->
+            <section id="home" class="section active">
+                <h2>Welcome to Library Management System</h2>
+                <p>Manage your library efficiently with our comprehensive system.</p>
+                
+                <div class="features">
+                    <div class="feature-card">
+                        <h3>📖 Book Management</h3>
+                        <p>Add, update, and manage your book collection</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>👥 User Management</h3>
+                        <p>Handle user registrations and profiles</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>📋 Borrowing System</h3>
+                        <p>Track book borrowings and returns</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>📊 Reports</h3>
+                        <p>Generate comprehensive reports and analytics</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Books Section -->
+            <section id="books" class="section">
+                <h2>Books Collection</h2>
+                
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Search books by title, author, or ISBN...">
+                    <button onclick="searchBooks()">Search</button>
+                    <button onclick="showAdvancedSearch()" class="btn-secondary">Advanced Search</button>
+                </div>
+
+                <!-- Advanced Search Panel -->
+                <div id="advancedSearchPanel" class="advanced-search hidden">
+                    <h3>Advanced Search</h3>
+                    <div class="search-grid">
+                        <input type="text" id="searchTitle" placeholder="Title">
+                        <input type="text" id="searchAuthor" placeholder="Author">
+                        <input type="text" id="searchISBN" placeholder="ISBN">
+                        <select id="searchCategory">
+                            <option value="">All Categories</option>
+                        </select>
+                        <input type="number" id="searchYearFrom" placeholder="Year From">
+                        <input type="number" id="searchYearTo" placeholder="Year To">
+                        <label><input type="checkbox" id="availableOnly"> Available Only</label>
+                        <button onclick="performAdvancedSearch()">Search</button>
+                    </div>
+                </div>
+
+                <div id="booksContainer">
+                    <!-- Books will be loaded here -->
+                </div>
+
+                <div id="pagination" class="pagination">
+                    <!-- Pagination will be loaded here -->
+                </div>
+            </section>
+
+            <!-- Login Section -->
+            <section id="login" class="section">
+                <h2>Login</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="username">Username or Email:</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button type="submit">Login</button>
+                </form>
+            </section>
+
+            <!-- Register Section -->
+            <section id="register" class="section">
+                <h2>Register</h2>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="regUsername">Username:</label>
+                        <input type="text" id="regUsername" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regEmail">Email:</label>
+                        <input type="email" id="regEmail" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regPassword">Password:</label>
+                        <input type="password" id="regPassword" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regFullName">Full Name:</label>
+                        <input type="text" id="regFullName" name="full_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regPhone">Phone:</label>
+                        <input type="tel" id="regPhone" name="phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="regAddress">Address:</label>
+                        <textarea id="regAddress" name="address"></textarea>
+                    </div>
+                    <button type="submit">Register</button>
+                </form>
+            </section>
+
+            <!-- Profile Section -->
+            <section id="profile" class="section">
+                <h2>My Profile</h2>
+                <div id="profileContent">
+                    <!-- Profile content will be loaded here -->
+                </div>
+            </section>
+
+            <!-- My Borrowings Section -->
+            <section id="borrowings" class="section">
+                <h2>My Borrowings</h2>
+                <div class="borrowing-filters">
+                    <select id="borrowingStatusFilter" onchange="loadBorrowings()">
+                        <option value="">All Status</option>
+                        <option value="borrowed">Borrowed</option>
+                        <option value="returned">Returned</option>
+                        <option value="overdue">Overdue</option>
+                    </select>
+                </div>
+                <div id="borrowingsContainer">
+                    <!-- Borrowings will be loaded here -->
+                </div>
+            </section>
+
+            <!-- Admin Section -->
+            <section id="admin" class="section">
+                <h2>Admin Dashboard</h2>
+                
+                <div class="admin-tabs">
+                    <button class="tab-btn active" onclick="showAdminTab('dashboard')">Dashboard</button>
+                    <button class="tab-btn" onclick="showAdminTab('manage-books')">Manage Books</button>
+                    <button class="tab-btn" onclick="showAdminTab('manage-categories')">Categories</button>
+                    <button class="tab-btn" onclick="showAdminTab('manage-users')">Users</button>
+                    <button class="tab-btn" onclick="showAdminTab('borrowings-admin')">Borrowings</button>
+                    <button class="tab-btn" onclick="showAdminTab('reports')">Reports</button>
+                </div>
+
+                <!-- Dashboard Tab -->
+                <div id="dashboard" class="admin-tab-content active">
+                    <h3>Library Statistics</h3>
+                    <div id="dashboardStats" class="stats-grid">
+                        <!-- Dashboard stats will be loaded here -->
+                    </div>
+                    <div id="dashboardCharts">
+                        <!-- Charts will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Manage Books Tab -->
+                <div id="manage-books" class="admin-tab-content">
+                    <h3>Manage Books</h3>
+                    <button onclick="showAddBookForm()" class="btn-primary">Add New Book</button>
+                    
+                    <!-- Add Book Form -->
+                    <div id="addBookForm" class="form-container hidden">
+                        <h4>Add New Book</h4>
+                        <form id="bookForm">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="bookTitle">Title:</label>
+                                    <input type="text" id="bookTitle" name="title" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="bookAuthor">Author:</label>
+                                    <input type="text" id="bookAuthor" name="author" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="bookISBN">ISBN:</label>
+                                    <input type="text" id="bookISBN" name="isbn">
+                                </div>
+                                <div class="form-group">
+                                    <label for="bookPublisher">Publisher:</label>
+                                    <input type="text" id="bookPublisher" name="publisher">
+                                </div>
+                                <div class="form-group">
+                                    <label for="bookYear">Publication Year:</label>
+                                    <input type="number" id="bookYear" name="publication_year">
+                                </div>
+                                <div class="form-group">
+                                    <label for="bookCategory">Category:</label>
+                                    <select id="bookCategory" name="category_id">
+                                        <option value="">Select Category</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="bookCopies">Total Copies:</label>
+                                    <input type="number" id="bookCopies" name="total_copies" required min="1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="bookLocation">Location:</label>
+                                    <input type="text" id="bookLocation" name="location">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="bookDescription">Description:</label>
+                                <textarea id="bookDescription" name="description"></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit">Add Book</button>
+                                <button type="button" onclick="hideAddBookForm()">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="adminBooksContainer">
+                        <!-- Admin books list will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Manage Categories Tab -->
+                <div id="manage-categories" class="admin-tab-content">
+                    <h3>Manage Categories</h3>
+                    <button onclick="showAddCategoryForm()" class="btn-primary">Add New Category</button>
+                    
+                    <!-- Add Category Form -->
+                    <div id="addCategoryForm" class="form-container hidden">
+                        <h4>Add New Category</h4>
+                        <form id="categoryForm">
+                            <div class="form-group">
+                                <label for="categoryName">Category Name:</label>
+                                <input type="text" id="categoryName" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="categoryDescription">Description:</label>
+                                <textarea id="categoryDescription" name="description"></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit">Add Category</button>
+                                <button type="button" onclick="hideAddCategoryForm()">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="categoriesContainer">
+                        <!-- Categories will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Manage Users Tab -->
+                <div id="manage-users" class="admin-tab-content">
+                    <h3>Manage Users</h3>
+                    <div class="user-filters">
+                        <select id="userRoleFilter" onchange="loadUsers()">
+                            <option value="">All Roles</option>
+                            <option value="admin">Admin</option>
+                            <option value="librarian">Librarian</option>
+                            <option value="member">Member</option>
+                        </select>
+                        <select id="userStatusFilter" onchange="loadUsers()">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="suspended">Suspended</option>
+                        </select>
+                        <input type="text" id="userSearchInput" placeholder="Search users..." onkeyup="searchUsers()">
+                    </div>
+                    <div id="usersContainer">
+                        <!-- Users will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Borrowings Admin Tab -->
+                <div id="borrowings-admin" class="admin-tab-content">
+                    <h3>All Borrowings</h3>
+                    <div class="borrowing-admin-filters">
+                        <select id="adminBorrowingStatusFilter" onchange="loadAllBorrowings()">
+                            <option value="">All Status</option>
+                            <option value="borrowed">Borrowed</option>
+                            <option value="returned">Returned</option>
+                            <option value="overdue">Overdue</option>
+                        </select>
+                        <input type="date" id="borrowingDateFrom" onchange="loadAllBorrowings()">
+                        <input type="date" id="borrowingDateTo" onchange="loadAllBorrowings()">
+                    </div>
+                    <div id="allBorrowingsContainer">
+                        <!-- All borrowings will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Reports Tab -->
+                <div id="reports" class="admin-tab-content">
+                    <h3>Reports & Analytics</h3>
+                    <div class="reports-grid">
+                        <div class="report-card">
+                            <h4>Overdue Books</h4>
+                            <button onclick="generateOverdueReport()">Generate Report</button>
+                            <div id="overdueReport"></div>
+                        </div>
+                        <div class="report-card">
+                            <h4>Popular Books</h4>
+                            <button onclick="generatePopularBooksReport()">Generate Report</button>
+                            <div id="popularBooksReport"></div>
+                        </div>
+                        <div class="report-card">
+                            <h4>User Activity</h4>
+                            <button onclick="generateUserActivityReport()">Generate Report</button>
+                            <div id="userActivityReport"></div>
+                        </div>
+                        <div class="report-card">
+                            <h4>Fines Report</h4>
+                            <button onclick="generateFinesReport()">Generate Report</button>
+                            <div id="finesReport"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Book Detail Modal -->
+            <div id="bookDetailModal" class="modal hidden">
+                <div class="modal-content">
+                    <span class="close" onclick="closeBookDetail()">&times;</span>
+                    <div id="bookDetailContent">
+                        <!-- Book details will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Book Modal -->
+            <div id="editBookModal" class="modal hidden">
+                <div class="modal-content">
+                    <span class="close" onclick="closeEditBook()">&times;</span>
+                    <h3>Edit Book</h3>
+                    <form id="editBookForm">
+                        <input type="hidden" id="editBookId">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="editBookTitle">Title:</label>
+                                <input type="text" id="editBookTitle" name="title" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editBookAuthor">Author:</label>
+                                <input type="text" id="editBookAuthor" name="author" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editBookISBN">ISBN:</label>
+                                <input type="text" id="editBookISBN" name="isbn">
+                            </div>
+                            <div class="form-group">
+                                <label for="editBookPublisher">Publisher:</label>
+                                <input type="text" id="editBookPublisher" name="publisher">
+                            </div>
+                            <div class="form-group">
+                                <label for="editBookYear">Publication Year:</label>
+                                <input type="number" id="editBookYear" name="publication_year">
+                            </div>
+                            <div class="form-group">
+                                <label for="editBookCategory">Category:</label>
+                                <select id="editBookCategory" name="category_id">
+                                    <option value="">Select Category</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="editBookCopies">Total Copies:</label>
+                                <input type="number" id="editBookCopies" name="total_copies" required min="1">
+                            </div>
+                            <div class="form-group">
+                                <label for="editBookLocation">Location:</label>
+                                <input type="text" id="editBookLocation" name="location">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="editBookDescription">Description:</label>
+                            <textarea id="editBookDescription" name="description"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit">Update Book</button>
+                            <button type="button" onclick="closeEditBook()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Return Book Modal -->
+            <div id="returnBookModal" class="modal hidden">
+                <div class="modal-content">
+                    <span class="close" onclick="closeReturnBook()">&times;</span>
+                    <h3>Return Book</h3>
+                    <div id="returnBookContent">
+                        <!-- Return book content will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 Library Management System. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
