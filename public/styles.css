@@ -20,18 +20,28 @@
   box-sizing: border-box;
 }
 
+main {
+  flex: 1;
+  margin-bottom: 0; 
+}
+
 body {
   font-family: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
   color: var(--text-light);
   background-color: var(--dark-bg);
   min-height: 100vh;
+  margin: 0;
+  padding: 0;
 }
 
 .container {
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 20px;
+  min-height: 100vh; 
+  display: flex;
+  flex-direction: column;
 }
 
 /* Header Styles */
@@ -804,7 +814,7 @@ footer {
   color: var(--text-light);
   text-align: center;
   padding: 2rem 0;
-  margin-top: 3rem;
+  margin-top: auto;
   border-top: 3px solid var(--primary-orange);
 }
 
