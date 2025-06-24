@@ -1,217 +1,95 @@
-# Library Management System (LMS7)
+# Library Management System
 
-Sistem Manajemen Perpustakaan dengan Frontend dan Backend yang terintegrasi menggunakan MySQL dan MongoDB.
+Sistem manajemen perpustakaan yang dibangun dengan Node.js, Express, MySQL, dan MongoDB.
 
-## 🚀 Cara Menjalankan Sistem
+## Fitur Utama
+
+### Backend Features
+- **Autentikasi & Autorisasi**: Login, register, JWT tokens, role-based access
+- **Manajemen Buku**: CRUD buku, kategori, pencarian advanced
+- **Sistem Peminjaman**: Pinjam buku, kembalikan buku, tracking overdue
+- **Manajemen User**: Profile management, user roles (admin, librarian, member)
+- **Sistem Denda**: Otomatis hitung denda untuk keterlambatan
+- **Laporan**: Dashboard, statistik, laporan peminjaman
+- **Activity Logging**: Log semua aktivitas user di MongoDB
+- **Search Analytics**: Tracking pencarian populer
+
+### Database Architecture
+**MySQL (Relational Data):**
+- Users (data user terstruktur)
+- Books (data buku)
+- Categories (kategori buku)
+- Borrowing Records (record peminjaman)
+- Fines (data denda)
+
+**MongoDB (Document-based):**
+- Book Reviews (review dan rating buku)
+- Activity Logs (log aktivitas user)
+- Search Logs (log pencarian)
+- Notifications (notifikasi)
+
+## Instalasi dan Setup
 
 ### Prerequisites
-Pastikan Anda telah menginstall:
 - Node.js (v14 atau lebih baru)
 - MySQL Server
 - MongoDB Server
-- Git
+- npm atau yarn
 
-### 1. Setup Backend
+### Langkah Instalasi
 
-#### Install Dependencies
-```bash
-cd backend
-npm install
-```
+1. **Install Dependencies**
+   \`\`\`bash
+   npm install
+   \`\`\`
 
-#### Konfigurasi Database
-1. **MySQL Setup:**
-   - Buat database baru bernama `lms7`
-   - Update file `.env` dengan kredensial MySQL Anda:
-   ```
+2. **Setup Environment Variables**
+   \`\`\`env
+   PORT=3000
    MYSQL_HOST=localhost
    MYSQL_USER=root
-   MYSQL_PASSWORD=your_password
-   MYSQL_DATABASE=lms7
-   ```
+   MYSQL_PASSWORD=your_mysql_password
+   MYSQL_DATABASE=library_management
+   MONGODB_URI=mongodb://localhost:27017/library_management
+   JWT_SECRET=your_jwt_secret_key_here
+   \`\`\`
 
-2. **MongoDB Setup:**
-   - Pastikan MongoDB server berjalan
-   - Update file `.env` jika perlu:
-   ```
-   MONGODB_URI=mongodb://localhost:27017
-   MONGODB_DB=lms7
-   ```
+3. **Jalankan Aplikasi**
+   \`\`\`bash
+   npm run dev
+   \`\`\`
 
-#### Inisialisasi Database
-```bash
-npm run setup
-```
-Perintah ini akan:
-- Membuat tabel-tabel MySQL yang diperlukan
-- Membuat koleksi MongoDB
-- Mengisi data sample
+4. **Akses Aplikasi**
+   - Frontend: http://localhost:3000
+   - API Base: http://localhost:3000/api
 
-#### Menjalankan Backend Server
-```bash
-npm run dev
-```
-Server akan berjalan di `http://localhost:3001`
+## API Endpoints
 
-### 2. Setup Frontend
+### Authentication
+- `POST /api/auth/register` - Registrasi user baru
+- `POST /api/auth/login` - Login user
 
-#### Struktur File
-Pastikan struktur file frontend seperti ini:
-```
-/
-├── index.html
-├── login.html
-├── css/
-│   └── styles.css
-└── js/
-    ├── api.js
-    ├── app.js
-    └── login.js
-```
+### Books
+- `GET /api/books` - Get semua buku
+- `POST /api/books` - Tambah buku baru (Admin/Librarian)
+- `PUT /api/books/:id` - Update buku (Admin/Librarian)
+- `DELETE /api/books/:id` - Hapus buku (Admin)
 
-#### Menjalankan Frontend
-1. **Menggunakan Live Server (Recommended):**
-   - Install Live Server extension di VS Code
-   - Klik kanan pada `index.html` → "Open with Live Server"
+### Borrowing
+- `POST /api/borrow/borrow` - Pinjam buku
+- `POST /api/borrow/return` - Kembalikan buku
+- `GET /api/borrow/history` - History peminjaman user
 
-2. **Menggunakan Python HTTP Server:**
-   ```bash
-   python -m http.server 8000
-   ```
-   Akses di `http://localhost:8000`
+### Users
+- `GET /api/users/profile` - Get profile user
+- `PUT /api/users/profile` - Update profile
+- `PUT /api/users/change-password` - Ganti password
 
-3. **Menggunakan Node.js HTTP Server:**
-   ```bash
-   npx http-server -p 8000
-   ```
+### Reports (Admin/Librarian)
+- `GET /api/reports/dashboard` - Dashboard statistics
+- `GET /api/reports/borrowings` - Laporan peminjaman
+- `GET /api/reports/overdue` - Laporan buku overdue
 
-### 3. Akses Sistem
+## License
 
-1. **Login Page:** `http://localhost:8000/login.html`
-2. **Dashboard:** `http://localhost:8000/index.html`
-
-#### Kredensial Login
-- **Pustakawan:** Nama bebas, pilih role "Librarian"
-- **Pengguna:** Nama bebas, pilih role "User"
-
-## 🔧 Konfigurasi API
-
-File `js/api.js` berisi konfigurasi koneksi ke backend:
-```javascript
-const API_BASE_URL = 'http://localhost:3001/api';
-```
-
-Pastikan URL ini sesuai dengan port backend Anda.
-
-## 📊 Fitur Sistem
-
-### Dashboard
-- Statistik real-time (total buku, anggota, peminjaman, keterlambatan)
-- Aktivitas terbaru dari MongoDB
-
-### Manajemen Buku
-- CRUD operations (Create, Read, Update, Delete)
-- Pencarian dan filter berdasarkan kategori/tahun
-- Tracking stok dan ketersediaan
-
-### Manajemen Anggota
-- Registrasi dan manajemen anggota
-- Status aktif/non-aktif
-- Pencarian anggota
-
-### Sirkulasi
-- Peminjaman buku dengan validasi stok
-- Pengembalian buku dengan perhitungan denda
-- Tracking status peminjaman
-
-### Reservasi
-- Sistem reservasi buku
-- Manajemen status reservasi
-
-## 🗄️ Struktur Database
-
-### MySQL Tables
-- `books` - Data buku dan stok
-- `members` - Data anggota perpustakaan
-- `loans` - Transaksi peminjaman
-- `reservations` - Data reservasi
-
-### MongoDB Collections
-- `activities` - Log aktivitas sistem
-- `logs` - Audit trail
-
-## 🔍 Troubleshooting
-
-### Backend Issues
-1. **Database Connection Error:**
-   - Pastikan MySQL dan MongoDB server berjalan
-   - Periksa kredensial di file `.env`
-
-2. **Port Already in Use:**
-   - Ubah PORT di `.env` file
-   - Atau hentikan proses yang menggunakan port 3001
-
-### Frontend Issues
-1. **CORS Error:**
-   - Pastikan backend berjalan dengan CORS enabled
-   - Gunakan Live Server atau HTTP server, jangan buka file HTML langsung
-
-2. **API Connection Failed:**
-   - Periksa URL di `js/api.js`
-   - Pastikan backend server berjalan
-
-### Common Solutions
-```bash
-# Restart backend
-cd backend
-npm run dev
-
-# Check backend health
-curl http://localhost:3001/api/health
-
-# Reset database
-npm run setup
-```
-
-## 📝 Development Notes
-
-### Adding New Features
-1. **Backend:** Tambahkan route baru di folder `backend/routes/`
-2. **Frontend:** Update `js/api.js` dan `js/app.js`
-
-### Database Schema Changes
-1. Update `backend/setup.js`
-2. Run `npm run setup` untuk apply changes
-
-### Environment Variables
-Semua konfigurasi ada di `backend/.env`:
-```
-MYSQL_HOST=localhost
-MYSQL_USER=root
-MYSQL_PASSWORD=
-MYSQL_DATABASE=lms7
-MONGODB_URI=mongodb://localhost:27017
-MONGODB_DB=lms7
-PORT=3001
-NODE_ENV=development
-JWT_SECRET=your-secret-key
-```
-
-## 🚀 Production Deployment
-
-### Backend
-1. Set `NODE_ENV=production` di `.env`
-2. Update database credentials
-3. Deploy ke platform seperti Heroku, DigitalOcean, atau AWS
-
-### Frontend
-1. Update `API_BASE_URL` di `js/api.js` ke production URL
-2. Deploy ke static hosting seperti Netlify, Vercel, atau GitHub Pages
-
-## 📞 Support
-
-Jika mengalami masalah:
-1. Periksa console browser untuk error JavaScript
-2. Periksa terminal backend untuk error server
-3. Pastikan semua dependencies terinstall
-4. Restart kedua server (frontend dan backend)
+MIT License - silakan gunakan untuk keperluan pembelajaran dan development.
